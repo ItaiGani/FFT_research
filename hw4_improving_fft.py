@@ -10,9 +10,18 @@ print("started")
 #constants
 frequency_error = 12            #the size of the "buckets" of frequcnies
 samples         = 100           #in the homework instructions, this is (T/W)
-heavy_amplitude = 5*10**4       #what consideres as heavy coefficient
+heavy_amplitude = 10**4       #what consideres as heavy coefficient
 alpha           = 10**4           #how close the windows should be to considered as the same
 
+
+def calculate_reduced_signal(signal, samples, i, j):
+    """gets signal and samples lst and two indices, return the reduced i-th signal by j, it means that we should already have the FFT of part j and we want b_i - b_j
+    usually, we would want signal will contain the audio and samples contain the samples_lst"""
+    assert i,j < len(samples)-1                 #assuring the indices in the range
+    reduced_i_signal =[]
+    for l in range(min(samples[i+1]-samples[i], samples[j+1]-samples[j])):          #computing elem-elem the value
+        reduced_i_signal.append(signal[samples[i]+l] - signal[samples[j]+l])
+    return reduced_i_signal
 
 fig, ax = plt.subplots()    #creating the graph
 Ax = []                     #list of x-values in the graph, represnts the time 
@@ -31,7 +40,12 @@ if l_audio == 2:        #if the audio has 2 channels, we take their avg.
 samples_lst = np.linspace(0, signal.shape[0], samples, dtype=int)       #dividing theortically the audio into "samples" parts
 print(signal.shape[0])
 #print(samples_lst)
+
+
+samples_check_list = [False]*(len(samples_lst)-1)                       #saves which parts of the graph we already guessed and which not
 for i in range(len(samples_lst)-1):
+    if samples_check_list[i] == True:
+        continue
     signal_restricted = signal[samples_lst[i]:samples_lst[i+1]:]
     N = signal_restricted.shape[0]
     #print ("Complete Samplings N", N)
@@ -77,6 +91,7 @@ for i in range(len(samples_lst)-1):
     Ax.extend([samples_lst[i]/fs_rate for j in range(len(heavy_C_i))])                    #adding the points to the graph, note: we could change it to len(heavy_By_i)
     By.extend(heavy_By_i)                                                           #to make the graph clearer, I'm showing only the high amplitude's frequencies
     C.extend(heavy_C_i)
+    
 
 sc = ax.scatter(Ax, By, c=C, s=12, edgecolor="none")                                 #plotting the graph
 ax.set_ylabel('frequency (log base 2 scale)', loc='center')
