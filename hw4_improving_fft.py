@@ -23,6 +23,12 @@ def calculate_reduced_signal(signal, samples, i, j):
         reduced_i_signal.append(signal[samples[i]+l] - signal[samples[j]+l])
     return reduced_i_signal
 
+def norm_values(lst):
+    lst_sum = 0
+    for num in lst:
+        lst_sum += num**2
+    return math.sqrt(lst_sum)
+
 fig, ax = plt.subplots()    #creating the graph
 Ax = []                     #list of x-values in the graph, represnts the time 
 By = []                     #iist of y-values in the graph, represtns the frequency
