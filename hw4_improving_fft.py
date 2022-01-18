@@ -4,9 +4,11 @@ from pyparsing import alphanums
 from scipy.io import wavfile
 from scipy.fft import rfft, rfftfreq
 import math
+import time
 
 
 print("##################### started #####################")
+t0 = time.perf_counter()                                                                            #just for me to see the times
 
 #printing some useful info about the signal
 fs_rate, signal = wavfile.read("audio_wav\pirates_of_the_caribbean_short_version.wav")              #imports the signal
@@ -19,32 +21,28 @@ if l_audio == 2:        #if the audio has 2 channels, we take their avg.
 #variables and constants
 Ts = 1.0/fs_rate                                                   # sampling interval in time
 frequency_error = 12                                               #the size of the "buckets" of frequcnies
-samples         = 100                                              #in the homework instructions, this is (T/W)
-heavy_amplitude = 7*10**5                                            #what considers as heavy coefficient
-alpha           = math.sqrt(2*10**6*signal.shape[0]/samples)       #how close the windows should be to considered as the same, I calculated this as sqrt((avg_distance**2)*signal.shape[0]/samples)
+samples         = 200                                              #in the homework instructions, this is (T/W)
+heavy_amplitude = 10**5                                            #what considers as heavy coefficient
+alpha           = math.sqrt(10**6*signal.shape[0]/samples)       #how close the windows should be to considered as the same, I calculated this as sqrt((avg_distance**2)*signal.shape[0]/samples)
 counter_successed_guesses = 0                                      #used in the guesser's algorithms    
 
 #functions
 def calculate_reduced_signal(signal, samples, i, j):
     """gets signal and samples lst and two indices, return the reduced i-th signal by j, it means that we should already have the FFT of part j and we want b_i - b_j
     usually, we would want signal will contain the audio and samples contain the samples_lst"""
-    assert i,j < len(samples)-1                 #assuring the indices in the range
-    reduced_i_signal =[]
-    for l in range(min(samples[i+1]-samples[i], samples[j+1]-samples[j])):          #computing elem-elem the value
-        reduced_i_signal.append(signal[samples[i]+l] - signal[samples[j]+l])
+    assert i,j < len(samples)-1                                                                         #assuring the indices in the range
+    d = min(samples[i+1]-samples[i], samples[j+1]-samples[j])
+    reduced_i_signal = signal[samples[i]:samples[i]+d] - signal[samples[j]:samples[j]+d]                #numpy subtraction
     return reduced_i_signal
 
 def norm_values(lst):
-    lst_sum = 0
-    for num in lst:
-        lst_sum += num**2
-    return math.sqrt(lst_sum)
+    return math.sqrt(np.sum(np.square(lst)))                                                            #numpy rules
 
 
 #helpful lists
-round_frequencies = [22.5*((2**(1/frequency_error))**i) for i in range(1, frequency_error*10+1)]        #list of the frequecnies's "buckets"
-samples_lst = np.linspace(0, signal.shape[0], samples, dtype=int)                                       #dividing theortically the audio into "samples" parts
-samples_check_list = [False]*(len(samples_lst)-1)                                                       #saves which parts of the graph we already guessed and which not
+round_frequencies = np.array([22.5*((2**(1/frequency_error))**i) for i in range(1, frequency_error*10+1)])          #list of the frequecnies's "buckets"
+samples_lst = np.linspace(0, signal.shape[0], samples, dtype=int)                                                   #dividing theortically the audio into "samples" parts
+samples_check_list = np.full(len(samples_lst)-1 ,False)                                                         #saves which parts of the graph we already guessed and which not
 
 
 fig, ax = plt.subplots()    #creating the graph
@@ -119,4 +117,6 @@ cbar.set_label("Amplitude", loc='center')
 plt.savefig("graphs/test.png")
 
 print("successed guesses = " + str(counter_successed_guesses))
+t1 = time.perf_counter()
+print("total time for analyzing " + str(t1-t0) + " seconds")
 print("##################### ended #####################")
