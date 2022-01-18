@@ -6,7 +6,7 @@ from scipy.fft import rfft, rfftfreq
 import math
 
 
-print("started \n")
+print("##################### started #####################")
 
 #printing some useful info about the signal
 fs_rate, signal = wavfile.read("audio_wav\pirates_of_the_caribbean_short_version.wav")              #imports the signal
@@ -17,12 +17,12 @@ if l_audio == 2:        #if the audio has 2 channels, we take their avg.
     signal = signal.sum(axis=1) / 2
 
 #variables and constants
-Ts = 1.0/fs_rate                # sampling interval in time
-frequency_error = 12            #the size of the "buckets" of frequcnies
-samples         = 100           #in the homework instructions, this is (T/W)
-heavy_amplitude = 10**4         #what consideres as heavy coefficient
-alpha           = 7*10**2       #how close the windows should be to considered as the same, I calculated this as sqrt((avg_distance**2)*N/samples)
-
+Ts = 1.0/fs_rate                                                   # sampling interval in time
+frequency_error = 12                                               #the size of the "buckets" of frequcnies
+samples         = 100                                              #in the homework instructions, this is (T/W)
+heavy_amplitude = 7*10**5                                            #what considers as heavy coefficient
+alpha           = math.sqrt(2*10**6*signal.shape[0]/samples)       #how close the windows should be to considered as the same, I calculated this as sqrt((avg_distance**2)*signal.shape[0]/samples)
+counter_successed_guesses = 0                                      #used in the guesser's algorithms    
 
 #functions
 def calculate_reduced_signal(signal, samples, i, j):
@@ -40,21 +40,19 @@ def norm_values(lst):
         lst_sum += num**2
     return math.sqrt(lst_sum)
 
+
+#helpful lists
+round_frequencies = [22.5*((2**(1/frequency_error))**i) for i in range(1, frequency_error*10+1)]        #list of the frequecnies's "buckets"
+samples_lst = np.linspace(0, signal.shape[0], samples, dtype=int)                                       #dividing theortically the audio into "samples" parts
+samples_check_list = [False]*(len(samples_lst)-1)                                                       #saves which parts of the graph we already guessed and which not
+
+
 fig, ax = plt.subplots()    #creating the graph
 Ax = []                     #list of x-values in the graph, represnts the time 
 By = []                     #iist of y-values in the graph, represtns the frequency
 C = []                      #list of z-values in the graph, represnts the amplitude of specific frequency at specific time.
 # notice that we have to save the next equality: len(Ax)=len(By)=len(C)
-round_frequencies = [110*((2**(1/frequency_error))**i) for i in range(1, frequency_error*7 + 6)]        #list of the frequecnies's "buckets"
-#print(round_frequencies)
 
-
-samples_lst = np.linspace(0, signal.shape[0], samples, dtype=int)       #dividing theortically the audio into "samples" parts
-print(signal.shape[0])
-#print(samples_lst)
-
-
-samples_check_list = [False]*(len(samples_lst)-1)                       #saves which parts of the graph we already guessed and which not
 for i in range(len(samples_lst)-1):
     if samples_check_list[i] == True:
         continue
@@ -99,8 +97,11 @@ for i in range(len(samples_lst)-1):
     C.extend(heavy_C_i)
     samples_check_list[i] = True
     for l in range(i+1, len(samples_lst)-1):
+        if samples_check_list[l] == True:
+            continue
         reduced_l = calculate_reduced_signal(signal, samples_lst, l, i)
         if norm_values(reduced_l) <= alpha:
+            counter_successed_guesses += 1
             Ax.extend([samples_lst[l]/fs_rate for j in range(len(heavy_C_i))])              #adding the points to the graph, note the change in Ax, as the time now is on the samples_lst[l]
             By.extend(heavy_By_i)                                                           #to make the graph clearer, I'm showing only the high amplitude's frequencies
             C.extend(heavy_C_i)
@@ -109,7 +110,7 @@ for i in range(len(samples_lst)-1):
 if False in samples_check_list:                             
     print("Error, there is uncalculated segment")                                           #should not get here
 
-sc = ax.scatter(Ax, By, c=C, s=12, edgecolor="none")                                        #plotting the graph
+sc = ax.scatter(Ax, By, c=C, s=15, edgecolor="none")                                        #plotting the graph
 ax.set_ylabel('frequency (log base 2 scale)', loc='center')
 ax.set_xlabel('time', loc='left')
 ax.set_title("pirates of the caribbean")
@@ -117,4 +118,5 @@ cbar = fig.colorbar(sc)
 cbar.set_label("Amplitude", loc='center')
 plt.savefig("graphs/test.png")
 
-print("ended")
+print("successed guesses = " + str(counter_successed_guesses))
+print("##################### ended #####################")
