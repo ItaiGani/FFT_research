@@ -11,7 +11,9 @@ print("##################### started #####################")
 t0 = time.perf_counter()                                                                            #just for me to see the times
 
 #printing some useful info about the signal
-fs_rate, signal = wavfile.read("audio_wav\pirates_of_the_caribbean_short_version.wav")              #imports the signal
+fs_rate, signal = wavfile.read("audio_wav\piano.wav")              #imports the signal
+signal = signal/(2**15)                                            #normalizing the audio
+signal = signal[:fs_rate*10:]                                      #taking the first 10 seconds
 print ("Frequency sampling", fs_rate)
 l_audio = len(signal.shape)
 print ("Channels", l_audio)
@@ -19,12 +21,13 @@ if l_audio == 2:        #if the audio has 2 channels, we take their avg.
     signal = signal.sum(axis=1) / 2
 
 #variables and constants
-Ts = 1.0/fs_rate                                                   # sampling interval in time
-frequency_error = 12                                               #the size of the "buckets" of frequcnies
-samples         = 200                                              #in the homework instructions, this is (T/W)
-heavy_amplitude = 10**5                                            #what considers as heavy coefficient
-alpha           = math.sqrt(10**6*signal.shape[0]/samples)       #how close the windows should be to considered as the same, I calculated this as sqrt((avg_distance**2)*signal.shape[0]/samples)
-counter_successed_guesses = 0                                      #used in the guesser's algorithms    
+Ts = 1.0/fs_rate                                                        # sampling interval in time
+frequency_error = 12                                                    #the size of the "buckets" of frequcnies
+samples         = 50*signal.shape[0]//fs_rate                           #in the homework instructions, this is (T/W)
+heavy_amplitude = None                                                  #what considers as heavy coefficient
+alpha           = math.sqrt(((1400/2**15)**2)*signal.shape[0]/samples)  #how close the windows should be to considered as the same, I calculated this as sqrt((avg_distance**2)*signal.shape[0]/samples)
+counter_successed_guesses = 0                                           #used in the guesser's algorithms    
+filter_coefficient = 0.15                                               #plotting the points such their amplitude is higher than filter*max(amplitudes) 
 
 #functions
 def calculate_reduced_signal(signal, samples, i, j):
@@ -84,15 +87,9 @@ for i in range(len(samples_lst)-1):
             else:
                 right = mid-1
     
-    heavy_By_i = []                                                                 
-    heavy_C_i  = []
-    for frequency, amplitude in zip(By_i, C_i):                                           #adding to heavy coefficients list the heavy ones.
-        if amplitude > heavy_amplitude:
-            heavy_By_i.append(math.log(frequency + 1,2))
-            heavy_C_i.append(amplitude)
-    Ax.extend([samples_lst[i]/fs_rate for j in range(len(heavy_C_i))])                    #adding the points to the graph, note: we could change it to len(heavy_By_i)
-    By.extend(heavy_By_i)                                                                 #to make the graph clearer, I'm showing only the high amplitude's frequencies
-    C.extend(heavy_C_i)
+    Ax.extend([samples_lst[i]/fs_rate for j in range(len(C_i))])                    #adding the points to the graph, note: we could change it to len(By_i)
+    By.extend(By_i)                                                                 #to make the graph clearer, I'm showing only the high amplitude's frequencies
+    C.extend(C_i)
     samples_check_list[i] = True
     for l in range(i+1, len(samples_lst)-1):
         if samples_check_list[l] == True:
@@ -100,13 +97,20 @@ for i in range(len(samples_lst)-1):
         reduced_l = calculate_reduced_signal(signal, samples_lst, l, i)
         if norm_values(reduced_l) <= alpha:
             counter_successed_guesses += 1
-            Ax.extend([samples_lst[l]/fs_rate for j in range(len(heavy_C_i))])              #adding the points to the graph, note the change in Ax, as the time now is on the samples_lst[l]
-            By.extend(heavy_By_i)                                                           #to make the graph clearer, I'm showing only the high amplitude's frequencies
-            C.extend(heavy_C_i)
+            Ax.extend([samples_lst[l]/fs_rate for j in range(len(C_i))])              #adding the points to the graph, note the change in Ax, as the time now is on the samples_lst[l]
+            By.extend(By_i)                                                           #to make the graph clearer, I'm showing only the high amplitude's frequencies
+            C.extend(C_i)
             samples_check_list[l] = True
 
 if False in samples_check_list:                             
     print("Error, there is uncalculated segment")                                           #should not get here
+
+
+highest_amplitude_filter = filter_coefficient*max(C)                                        #removing all the points that their ampiltudes are too low
+Ax = [Ax[i] for i in range(len(C)) if C[i] >= highest_amplitude_filter]                     
+By = [math.log(By[i] + 1, 2) for i in range(len(C)) if C[i] >= highest_amplitude_filter]
+C  = [C[i] for i in range(len(C)) if C[i] >= highest_amplitude_filter]
+
 
 sc = ax.scatter(Ax, By, c=C, s=15, edgecolor="none")                                        #plotting the graph
 ax.set_ylabel('frequency (log base 2 scale)', loc='center')
