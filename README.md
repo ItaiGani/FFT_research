@@ -15,4 +15,4 @@
 - [Itai Gani](https://github.com/ItaiGani)
 - [Yotam Zaiger](https://github.com/YotamZaiger1)
 - [Ron Mikhelman](https://github.com/yeahBOYYYYY)
-- [Omri Hulty](https://github.com/omrihhh)
+- [Omri Hulaty](https://github.com/omrihhh)
