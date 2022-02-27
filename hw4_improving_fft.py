@@ -46,7 +46,7 @@ def norm_values(lst):
 round_frequencies = np.array([22.5*((2**(1/frequency_error))**i) for i in range(1, frequency_error*10+1)])          #list of the frequecnies's "buckets"
 samples_lst = np.linspace(0, signal.shape[0], samples, dtype=int)                                                   #dividing theortically the audio into "samples" parts
 samples_check_list = np.full(len(samples_lst)-1 ,False)                                                         #saves which parts of the graph we already guessed and which not
-padding = int((samples_lst[1] - samples_lst[0]) * 0.75)
+padding = int((samples_lst[1] - samples_lst[0]) * 0.75) # to compute with overlapping windows we take additional padding entries before and after the window
 
 fig, ax = plt.subplots()    #creating the graph
 def vfft():
@@ -59,7 +59,7 @@ def vfft():
     for i in range(len(samples_lst)-1):
         if samples_check_list[i] == True:
             continue
-        lim_down, lim_up = max(0, samples_lst[i] - padding), min(len(signal) - 1, samples_lst[i+1] + padding)
+        lim_down, lim_up = max(0, samples_lst[i] - padding), min(len(signal) - 2, samples_lst[i+2] + padding) # compute window limits to not exceed the signal range
         signal_restricted = signal[lim_down:lim_up:]
         FFT = np.abs(rfft(signal_restricted))               #computing FFT on the restricted signal
         freqs = rfftfreq(signal_restricted.size, Ts)        #notice that the amplitude of freqs[l] = FFT[l]
