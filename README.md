@@ -1,6 +1,6 @@
-# Fourier analysis
+# Fourier Analysis
 
-[Hi Oren, check out our work!](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[Hi Oren, we would really appreciate if you check out this fascinating video!](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
- - 01/01/2022: asked for the fft code
- - 27/02/2022: still waiting on that fft code...
+- Our master goal is to improve the fft analysis and decrease its running time by changing the parameters IRT.
+- Moreover, we want to find the applications of our research on the real world.
