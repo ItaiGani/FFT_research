@@ -1,29 +1,22 @@
 import matplotlib.pyplot as plt
-from scipy.io import wavfile
 import numpy as np
 from math import floor
-
+from fft_stream_interface import FFTHC
 
 TICKS_PER_SECOND = 100
-WINDOW_SIZE = 0.2
 
 
-def plot_audio_graph_from_file(file_name):
-    fs, signal = wavfile.read(file_name)
-    plot_audio_graph(fs, signal)
-
-
-def plot_audio_graph(fs, signal):
+def plot_audio_graph(freq, signal, window_size=0.2):
     signal = signal.T
     # For stereo:
     # signal = (signal[0] + signal[1]) / 2.0
-    signal_length = len(signal)  # fs * 11
-    tick_length = fs // TICKS_PER_SECOND
-    samples_per_window = int(fs * WINDOW_SIZE)
+    signal_length = len(signal)  # freq * 11
+    tick_length = freq // TICKS_PER_SECOND
+    samples_per_window = int(freq * window_size)
     # print(samples_per_window)
     all_freqs = range(20, samples_per_window - 1200)
     bin_size = 24
-    bins_num = floor(np.log(all_freqs[-1] / WINDOW_SIZE) * bin_size) + 1
+    bins_num = floor(np.log(all_freqs[-1] / window_size) * bin_size) + 1
     prev_to_add = 10
 
     i = 0
@@ -36,7 +29,7 @@ def plot_audio_graph(fs, signal):
         # round
         rft = np.linspace(0+0j, 0, bins_num)
         for f in all_freqs:
-            rft[floor(np.log(f / WINDOW_SIZE) * bin_size)] += ft[f]
+            rft[floor(np.log(f / window_size) * bin_size)] += ft[f]
 
         rft = np.abs(rft)
 
@@ -60,4 +53,4 @@ def plot_audio_graph(fs, signal):
     plt.show()
 
 
-plot_audio_graph_from_file("../audio_wav/400Hz.wav")
+a = FFTHC("../audio_wav/400Hz.wav")
