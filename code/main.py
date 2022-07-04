@@ -5,16 +5,7 @@ from calc_hc import calc_fft
 
 
 class main_fft:
-    def __init__(self, filename: str, thresh: float = 0, win_size: float = 0.1, win_overlap: float = 0,
-                 mode: int = 0) -> None:
-        """
-        Args:
-            filename (str): Path for '.wav' file to read.
-            thresh (float, optional): The minimum amplitude of a coefficient that consider as heavy. Defaults to 0.
-            win_size (int, optional): The size of a window (in seconds). Defaults to 1.
-            win_overlap (int, optional): The percentage of the overlapping (between 0 to 1). Defaults to 0.
-            mode (int, optional): The fft mode to run. Defaults to 0.
-        """
+    def __init__(self, filename: str, thresh: float = 0, win_size: float = 0.1, win_overlap: float = 0, mode: int = 0) -> None:
         self.sample_rate, self.signal = wavfile.read(filename)
         self.thresh = thresh
         self.win_size = win_size
