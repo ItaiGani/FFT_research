@@ -2,7 +2,7 @@ import numpy as np
 from scipy.fft import rfft
 
 
-def calc_fft(data, thresh, sample_rate):
+def calculate_fft(data, thresh, sample_rate):
     n = len(data)
     f_hat = rfft(data, n)
 

@@ -1,10 +1,10 @@
 from scipy.io import wavfile
 import math
 
-from calc_hc import calc_fft
+from calculate_hc_fft import calculate_fft
 
 
-class FFTHC:
+class FFTHC():
     def __init__(self, filename : str, thresh : float = 0, win_size : float = 0.1, win_overlap : float = 0, mode : int = 0) -> None:
         """
         Args:
@@ -23,17 +23,24 @@ class FFTHC:
         self.samples_per_window = self.sample_rate * self.win_size
 
 
-    def calc(self):
+    def calculate(self):
+        """Calculates the heavy coefficients over the file.
+
+        Returns:
+            generator of freq-amp dictionaries representing the windows.
+        """
         overlapping_samples = self.samples_per_window * self.win_overlap
         samples_step = int(self.samples_per_window - overlapping_samples)
         number_of_wins = math.ceil((len(self.signal) - self.samples_per_window) / (self.samples_per_window - overlapping_samples)) + 1
 
         res = []
         for i in range(number_of_wins): 
-            f_hat = calc_fft(self.signal[i * samples_step : (i + 1) * samples_step], self.thresh, self.sample_rate)
+            f_hat = calculate_fft(self.signal[i * samples_step : (i + 1) * samples_step], self.thresh, self.sample_rate)
             res.append(f_hat)
-        return res
         
+        return (x for x in res)
+        
+
 
     @staticmethod
     def rick(*args, **kwargs):
