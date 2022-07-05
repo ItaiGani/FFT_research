@@ -1,11 +1,11 @@
 from scipy.io import wavfile
 import math
-
+from plot import plot_audio_graph
 from calculate_hc_fft import calculate_fft
 
 
-class FFTHC():
-    def __init__(self, filename : str, thresh : float = 0, win_size : float = 0.1, win_overlap : float = 0, mode : int = 0) -> None:
+class FFTHC:
+    def __init__(self, filename: str, thresh: float = 0, win_size: float = 0.1, win_overlap: float = 0, mode: int = 0) -> None:
         """
         Args:
             filename (str): Path for '.wav' file to read.
@@ -18,7 +18,7 @@ class FFTHC():
         self.thresh = thresh
         self.win_size = win_size
         self.win_overlap = win_overlap
-        self.mode : int = mode
+        self.mode: int = mode
 
         self.samples_per_window = self.sample_rate * self.win_size
 
@@ -46,3 +46,6 @@ class FFTHC():
     def rick(*args, **kwargs):
         import webbrowser
         webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+
+    def plot(self):
+        plot_audio_graph(self.sample_rate, self.signal, self.window_size)
