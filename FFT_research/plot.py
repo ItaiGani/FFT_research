@@ -11,7 +11,7 @@ def plot_audio_graph(iter):
     for index, heavy  in enumerate(iter):
         x += [index] * len(heavy)
         for k in heavy.keys():
-            y.append(math.log(k,2))
+            y.append(k)
             z.append(heavy[k]) 
 
     sc = ax.scatter(x, y, c = z)
