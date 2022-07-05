@@ -40,7 +40,7 @@ class FFTHC:
         res = []
         for i in range(number_of_wins): 
             window = self.signal[i * samples_step : (i + 1) * samples_step]
-            absolute_thresh = approx_norm_squared(window) ** 0.5
+            absolute_thresh = self.thresh * (approx_norm_squared(window) ** 0.5)
 
             f_hat = calculate_fft(window, absolute_thresh, self.sample_rate)
             res.append(f_hat)
@@ -54,5 +54,6 @@ class FFTHC:
         import webbrowser
         webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
+    @staticmethod
     def plot(iter):
         plot_audio_graph(iter)
