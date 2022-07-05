@@ -40,8 +40,9 @@ class FFTHC:
         res = []
         for i in range(number_of_wins): 
             window = self.signal[i * samples_step : (i + 1) * samples_step]
-            absolute_thresh = self.thresh * (approx_norm_squared(window) ** 0.5)
-
+            t = approx_norm_squared(window)
+            absolute_thresh = self.thresh * (t ** 0.5)
+            print(absolute_thresh)
             f_hat = calculate_fft(window, absolute_thresh, self.sample_rate)
             res.append(f_hat)
         

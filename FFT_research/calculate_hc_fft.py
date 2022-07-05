@@ -3,7 +3,7 @@ import random
 import numpy as np
 from scipy.fft import rfft
 
-SAMPLES_NORM = 100
+SAMPLES_NORM = 200
 
 
 def calculate_fft(data, absolute_thresh, sample_rate):
@@ -26,7 +26,7 @@ def approx_norm_squared(window):
     samples = random.sample(range(len(window)), SAMPLES_NORM)
 
     for sample in samples:
-        s += abs(window[sample])
-    
+        s += int(window[sample])**2
+
     return s / SAMPLES_NORM
 
