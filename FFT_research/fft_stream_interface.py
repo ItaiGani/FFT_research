@@ -54,5 +54,5 @@ class FFTHC:
         import webbrowser
         webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
-    def plot(self):
-        plot_audio_graph(self.sample_rate, self.signal, self.window_size)
+    def plot(iter):
+        plot_audio_graph(iter)
