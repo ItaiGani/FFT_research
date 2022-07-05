@@ -1,7 +1,8 @@
 from scipy.io import wavfile
 import math
+
 from plot import plot_audio_graph
-from calculate_hc_fft import calculate_fft
+from calculate_hc_fft import calculate_fft, approx_norm_squared
 
 
 class FFTHC:
@@ -9,12 +10,15 @@ class FFTHC:
         """
         Args:
             filename (str): Path for '.wav' file to read.
-            thresh (float, optional): The minimum amplitude of a coefficient that consider as heavy. Defaults to 0.
+            thresh (float, optional): The minimum amplitude of a coefficient that consider as heavy (in percentage). Defaults to 0.
             win_size (int, optional): The size of a window (in seconds). Defaults to 1.
             win_overlap (int, optional): The percentage of the overlapping (between 0 to 1). Defaults to 0.
             mode (int, optional): The fft mode to run. Defaults to 0.
         """
         self.sample_rate, self.signal = wavfile.read(filename)
+        if hasattr(self.signal[0],'__len__') and len(self.signal[0] > 1):
+            raise NotImplementedError(f"More than 1 chanel in {filename}")
+
         self.thresh = thresh
         self.win_size = win_size
         self.win_overlap = win_overlap
@@ -35,7 +39,10 @@ class FFTHC:
 
         res = []
         for i in range(number_of_wins): 
-            f_hat = calculate_fft(self.signal[i * samples_step : (i + 1) * samples_step], self.thresh, self.sample_rate)
+            window = self.signal[i * samples_step : (i + 1) * samples_step]
+            absolute_thresh = approx_norm_squared(window) ** 0.5
+
+            f_hat = calculate_fft(window, absolute_thresh, self.sample_rate)
             res.append(f_hat)
         
         return (x for x in res)
@@ -47,5 +54,5 @@ class FFTHC:
         import webbrowser
         webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
-    def plot(self):
-        plot_audio_graph(self.sample_rate, self.signal, self.window_size)
+    def plot(iter):
+        plot_audio_graph(iter)
