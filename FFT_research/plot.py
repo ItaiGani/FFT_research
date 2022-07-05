@@ -16,4 +16,3 @@ def plot_audio_graph(iter):
     plt.scatter(x, y, c = z)
     plt.colorbar()
     plt.show()
-    print("Asdasd")
