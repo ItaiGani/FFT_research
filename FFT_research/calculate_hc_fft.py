@@ -4,7 +4,7 @@ import random
 import numpy as np
 from scipy.fft import rfft
 
-SAMPLES_NORM = 100000000
+SAMPLES_NORM = 200
 
 
 def calculate_fft(data, absolute_thresh, sample_rate):

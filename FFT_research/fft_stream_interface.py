@@ -1,8 +1,10 @@
 from scipy.io import wavfile
+import sys
 import math
+sys.path.append("../FFT_research")
 
-from plot import plot_audio_graph
-from calculate_hc_fft import calculate_fft, approx_norm_squared
+from FFT_research.plot import plot_audio_graph
+from FFT_research.calculate_hc_fft import calculate_fft, approx_norm_squared
 
 
 class FFTHC:
@@ -47,12 +49,11 @@ class FFTHC:
         return (x for x in res)
         
 
-
     @staticmethod
     def rick(*args, **kwargs):
         import webbrowser
         webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
     @staticmethod
-    def plot(iter):
-        plot_audio_graph(iter)
+    def plot(iter, title: str = "FFT", ):
+        plot_audio_graph(iter, title)
