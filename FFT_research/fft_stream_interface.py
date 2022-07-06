@@ -18,7 +18,7 @@ class FFTHC:
             mode (int, optional): The fft mode to run. Defaults to 0.
         """
         self.sample_rate, self.signal = wavfile.read(filename)
-        if hasattr(self.signal[0],'__len__') and len(self.signal[0] > 1):
+        if hasattr(self.signal[0],'__len__') and len(self.signal[0]) > 1:
             raise NotImplementedError(f"More than 1 chanel in {filename}")
 
         self.thresh = thresh

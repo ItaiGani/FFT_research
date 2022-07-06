@@ -29,5 +29,5 @@ def approx_norm_squared(window):
     for sample in samples:
         s += int(window[sample])**2
 
-    return s / SAMPLES_NORM
+    return s / min(SAMPLES_NORM, len(window))
 
