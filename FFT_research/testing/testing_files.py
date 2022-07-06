@@ -1,6 +1,8 @@
 import time
 import os
 import sys
+
+from matplotlib import scale
 sys.path.append("../FFT_research")
 from FFT_research.fft_stream_interface import FFTHC
 
