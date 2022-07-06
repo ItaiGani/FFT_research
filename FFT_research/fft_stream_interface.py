@@ -55,5 +55,5 @@ class FFTHC:
         webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
     @staticmethod
-    def plot(iter, title: str = "FFT", ):
-        plot_audio_graph(iter, title)
+    def plot(iter, title: str = "FFT", scale: bool = False):
+        plot_audio_graph(iter, title, scale)

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-def plot_audio_graph(iter, title = "FFT", scale: bool = False):
+def plot_audio_graph(iter, title = "transform fourier", scale: bool = False):
     fig, ax = plt.subplots() 
     x = []
     y = []
@@ -17,7 +17,11 @@ def plot_audio_graph(iter, title = "FFT", scale: bool = False):
                 y.append(k)
             z.append(heavy[k]) 
 
-    sc = ax.scatter(x, y, c = z)
+    transparency_list = []
+    max_amp, min_amp = max(z), min(z)
+    for amp in z:
+        transparency_list.append(0.9 * (amp-min_amp)/(max_amp-min_amp) + 0.1)
+    sc = ax.scatter(x, y, c = z, alpha = transparency_list)
     ax.set_xlabel("windows")
     if(scale):
         ax.set_ylabel("frequency Hz (log 2 base)")
@@ -26,4 +30,9 @@ def plot_audio_graph(iter, title = "FFT", scale: bool = False):
     ax.set_title(title)
     cbar = fig.colorbar(sc)
     cbar.set_label("Amplitude", loc='center')
+    yabs_max = max(y)
+    if(scale):
+        ax.set_ylim(ymin=0, ymax = yabs_max + 1)
+    else:
+        ax.set_ylim(ymin=0, ymax = yabs_max + 150)
     plt.show()
