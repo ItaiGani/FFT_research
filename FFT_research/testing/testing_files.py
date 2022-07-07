@@ -3,7 +3,9 @@ import os
 import sys
 
 from matplotlib import scale
+
 sys.path.append("../FFT_research")
+from FFT_research.testing.overlapping_windows import Overlapping_Windows
 from FFT_research.fft_stream_interface import FFTHC
 
 
@@ -24,24 +26,33 @@ def get_wav_files():
 WAV_FILES = get_wav_files()
 
 def time_function(window_size, window_overlap, loop=3):
-    total_time = 0
+    total_time_no_overlap = 0
+    total_time_with_overlap = 0
 
     for filename in WAV_FILES:
         try:
             f = FFTHC(filename=filename, thresh=0, win_size=window_size, win_overlap=window_overlap)
+            g = Overlapping_Windows(filename=filename, thresh=0, win_size=window_size, win_overlap=window_overlap)
         except NotImplementedError:
-            print(f'\'{filename.split("/")[-1]}\' was not read.')
+            # print(f'\'{filename.split("/")[-1]}\' was not read.')
             continue
         
         for _ in range(loop):
             t1 = time.perf_counter()
             f.calculate()
-            
             t2 = time.perf_counter()
-            total_time += t2 - t1
+            total_time_no_overlap += t2 - t1
+
+            t1 = time.perf_counter()
+            g.calculate(a=100000)
+            t2 = time.perf_counter()
+            total_time_with_overlap += t2 - t1
+
     
-    return total_time / loop
+    return total_time_no_overlap / loop, total_time_with_overlap / loop
 
 
-
-plotting(r"FFT_research\testing\audio_wav\400Hz.wav", 0.6)
+if __name__ == '__main__':
+    for i in range(11):
+        times = time_function(0.1, 0.1*i)
+        print(f'overlap percentage: {0.1*i}\n\twithout overlapping: {times[0]}\n\twith overlapping: {times[1]}')

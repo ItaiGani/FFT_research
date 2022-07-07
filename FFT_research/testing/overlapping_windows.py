@@ -23,11 +23,18 @@ class Overlapping_Windows(FFTHC):
         res = [last_fft]
 
         for i in range(1, number_of_wins):
-            window = self.signal[i * samples_step : i * samples_step + self.samples_per_window]
+            window = self.signal[i * samples_step : i * samples_step + self.samples_per_window]                
 
             def error(x):
-                return window[x] - self.signal[last_fft_index * samples_step + x]
+                return  float(window[x]) - float(self.signal[last_fft_index * samples_step + x])
             
+            if len(window) < self.samples_per_window:
+                absolute_thresh = self.thresh * (approx_norm_squared(window) ** 0.5)
+                last_fft = calculate_fft(window, absolute_thresh, self.sample_rate)
+                last_fft_index = i
+                res.append(last_fft)
+                break
+
             norm = 0
             samples = random.sample(range(self.samples_per_window), min(samples_number, self.samples_per_window))
             for sample in samples:
@@ -39,10 +46,4 @@ class Overlapping_Windows(FFTHC):
                 last_fft = calculate_fft(window, absolute_thresh, self.sample_rate)
                 last_fft_index = i
             res.append(last_fft)
-
         return (x for x in res)
-
-
-if __name__ == '__main__':
-    x = Overlapping_Windows("FFT_research/testing/audio_wav/(100, 4096)_sin(t+1).wav", 0.7, win_size=0.1, win_overlap=0.5)
-    Overlapping_Windows.plot(x.calculate())
