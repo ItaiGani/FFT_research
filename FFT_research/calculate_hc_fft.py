@@ -16,7 +16,7 @@ def calculate_fft(data, absolute_thresh, sample_rate, return_absolute=True, calc
     dictionary = dict()
     for i in range(len(f_hat_abs)):
         if f_hat_abs[i] >= absolute_thresh:
-            freq = i * sample_rate / (2 * len(f_hat))
+            freq = i * sample_rate / n
             dictionary[freq] = f_hat_abs if return_absolute else f_hat[i]
 
     return dictionary
