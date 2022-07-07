@@ -1,4 +1,3 @@
-from operator import le
 import random
 
 import numpy as np
@@ -21,13 +20,11 @@ def calculate_fft(data, absolute_thresh, sample_rate):
     return dictionary
 
 
-
 def approx_norm_squared(window):
     s = 0
     samples = random.sample(range(len(window)), min(SAMPLES_NORM, len(window)))
 
     for sample in samples:
-        s += int(window[sample])**2
+        s += int(window[sample]) ** 2
 
     return s / min(SAMPLES_NORM, len(window))
-
