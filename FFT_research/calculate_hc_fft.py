@@ -1,21 +1,23 @@
 import random
 
 import numpy as np
-from scipy.fft import rfft
+from scipy.fft import fft, rfft
 
 SAMPLES_NORM = 200
 
 
-def calculate_fft(data, absolute_thresh, sample_rate):
+def calculate_fft(data, absolute_thresh, sample_rate, return_absolute=True, calc_rfft=True):
     n = len(data)
-    f_hat = rfft(data, n)
 
-    f_hat = np.abs(f_hat)
+    f_hat = rfft(data, n) if calc_rfft else fft(data, n)
+
+    f_hat_abs = np.absolute(f_hat)
 
     dictionary = dict()
-    for i in range(len(f_hat)):
-        if f_hat[i] >= absolute_thresh:
-            dictionary[i * sample_rate / (2 * len(f_hat))] = f_hat[i]
+    for i in range(len(f_hat_abs)):
+        if f_hat_abs[i] >= absolute_thresh:
+            freq = i * sample_rate / (2 * len(f_hat))
+            dictionary[freq] = f_hat_abs if return_absolute else f_hat[i]
 
     return dictionary
 
