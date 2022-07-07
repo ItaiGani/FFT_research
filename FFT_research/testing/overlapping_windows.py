@@ -16,13 +16,12 @@ class Overlapping_Windows(FFTHC):
         samples_step = int(self.samples_per_window - overlapping_samples)
         number_of_wins = math.ceil((len(self.signal) - self.samples_per_window) / (self.samples_per_window - overlapping_samples)) + 1
 
-
-        res = []
-
         window = self.signal[0 : self.samples_per_window]
         absolute_thresh = self.thresh * (approx_norm_squared(window) ** 0.5)
         last_fft = calculate_fft(window, absolute_thresh, self.sample_rate)
         last_fft_index = 0
+        res = [last_fft]
+
         for i in range(1, number_of_wins):
             window = self.signal[i * samples_step : i * samples_step + self.samples_per_window]
 
@@ -39,14 +38,11 @@ class Overlapping_Windows(FFTHC):
                 absolute_thresh = self.thresh * (approx_norm_squared(window) ** 0.5)
                 last_fft = calculate_fft(window, absolute_thresh, self.sample_rate)
                 last_fft_index = i
-            else:
-                res.append(last_fft)
+            res.append(last_fft)
 
         return (x for x in res)
 
 
 if __name__ == '__main__':
-    import os
-    print(os.listdir())
-    x = Overlapping_Windows("FFT_research/testing/audio_wav/400Hz.wav", 0.7, win_size=0.1, win_overlap=0.5)
+    x = Overlapping_Windows("FFT_research/testing/audio_wav/(100, 4096)_sin(t+1).wav", 0.7, win_size=0.1, win_overlap=0.5)
     Overlapping_Windows.plot(x.calculate())
