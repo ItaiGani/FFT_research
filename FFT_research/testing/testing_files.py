@@ -100,19 +100,31 @@ def find_best_parameters(size_step, overlap_step, max_win_size=1, loop=3, plot=F
             print(f'{win_size = }, {overlap = }')
     
     if plot:
-        x = np.arange(0, 1, overlap_step)  # overlap axis
-        y = np.arange(0, max_win_size, size_step)  # step axis
+        fig, ax = plt.subplots()
 
-        x_center = 0.5 * (x[:-1] + x[1:])
-        y_center = 0.5 * (y[:-1] + y[1:])
+        x = np.append(np.arange(0, 1, overlap_step), [1]) # overlap axis
+        y = np.append(np.arange(0, max_win_size, size_step), [max_win_size])  # size axis
+        Z = np.array(times)
+        p = ax.pcolormesh(x, y, Z, vmin=0, cmap='turbo', shading='flat')
+        
+        
+        x_ticks = np.around(x[1:] - overlap_step/2, decimals=3)
+        x_ticks_labels = np.around(x[:-1], decimals=3)
+        y_ticks = np.around(y[:-1] + size_step/2, decimals=3)
+        y_ticks_labels = np.around(y[1:], decimals=3)
 
-        X, Y = np.meshgrid(x_center, y_center)
-        Z = np.array(times).T
-
-        p = plt.pcolormesh(x, y, X, cmap='turbo', shading='flat')
-        # cset =  plt.contour(X, Y, Z, cmap='gray')
-        plt.colorbar(p)
-        plt.savefig('FFT_research/testing/graph.png')
+        fig.canvas.draw()
+        ax.set_xticks(x_ticks)
+        ax.set_yticks(y_ticks)
+        ax.set_xticklabels(x_ticks_labels)
+        ax.set_yticklabels(y_ticks_labels)
+        
+        cbar = fig.colorbar(p)
+        cbar.set_label('calculation time (s)')
+        ax.set_xlabel('overlap (%)')
+        ax.set_ylabel('win size (s)')
+        
+        fig.savefig('FFT_research/testing/graph.png')
 
 
     return best_win_size, best_overlap
